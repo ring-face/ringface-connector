@@ -2,3 +2,4 @@
 # sphinx
 
 ring_doorbell==0.6.2
+python-decouple

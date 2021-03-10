@@ -1,10 +1,11 @@
+from decouple import config
 
-DATA_DIR = './data'
+DATA_DIR = config('DATA_DIR')
 
 
 class DirStructureRingConnector():
-    def __init__(self, unprocessedEvents = DATA_DIR + "/events/unprocessed", processedEvents = DATA_DIR + "/events/processed"):
-        self.unprocessedEvents = unprocessedEvents
-        self.processedEvents = processedEvents
+    def __init__(self, dataDir = DATA_DIR):
+        self.unprocessedEvents = dataDir + "/events/unprocessed"
+        self.processedEvents = dataDir + "/events/processed"
 
 DEFAULT_DIR_STUCTURE = DirStructureRingConnector()

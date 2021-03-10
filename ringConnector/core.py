@@ -1,17 +1,18 @@
 import logging
 
 import json
-import getpass
 import os
 from datetime import date
 from pathlib import Path
 from pprint import pprint
+from decouple import config
+
 
 from ring_doorbell import Ring, Auth
-from oauthlib.oauth2 import MissingTokenError
 
 
-oauth_file = Path("oauth-autorization.json")
+oauth_file = Path(config("OAUTH_FILE"))
+
 
 def downloadDaysDingVideos(dirStructure, today=date.today()):
     ring = getRing()
@@ -69,34 +70,18 @@ def getLastDoorbellEvents(maxEvents=10):
             print('--' * 50)
 
 
-def token_updated(token):
-    oauth_file.write_text(json.dumps(token))
-
-
-def otp_callback():
-    auth_code = input("2FA code: ")
-    return auth_code
-
 def getAuth():
     if oauth_file.is_file():
         auth = Auth("MyProject/1.0", json.loads(oauth_file.read_text()), token_updated)
     else:
-        username = input("Username: ")
-        password = getpass.getpass("Password: ")
-        auth = Auth("MyProject/1.0", None, token_updated)
-        try:
-            auth.fetch_token(username, password)
-        except MissingTokenError:
-            auth.fetch_token(username, password, otp_callback())
-
+        sys.exit('Authorization file does not exist')
     return auth
 
+def token_updated(token):
+    oauth_file.write_text(json.dumps(token))
 
 def getRing():
     auth = getAuth()
-
     ring = Ring(auth)
-
     ring.update_data()
-
     return ring
