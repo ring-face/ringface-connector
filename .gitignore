@@ -92,3 +92,4 @@ test_token.cache
 oauth-autorization.json
 
 data
+.vscode
