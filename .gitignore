@@ -88,3 +88,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+test_token.cache
+oauth-autorization.json
+
+data
