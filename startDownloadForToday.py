@@ -9,7 +9,6 @@ logging.getLogger().setLevel(logging.INFO)
 devices = core.listAllDevices()
 logging.info(f"found devices {devices}")
 
-# core.getLastDoorbellEvents()
 
 res = core.downloadDaysDingVideos(dirStructure=DEFAULT_DIR_STUCTURE)
 logging.info(res)

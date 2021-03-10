@@ -39,14 +39,14 @@ def downloadAndSaveEvent(event, doorbell, dirStructure):
     if not os.path.isdir(eventDir):
         os.mkdir(eventDir)
 
-    filename = f"{eventDir}/{id}"
+        filename = f"{eventDir}/{id}"
 
-    with open(filename + ".json", 'w') as eventDetails:
-        json.dump({'id':id, 'createdAt':eventName, 'answered': event['answered'], 'kind': event['kind'], 'duration': event['duration']}, eventDetails)
+        with open(filename + ".json", 'w') as eventDetails:
+            json.dump({'id':id, 'createdAt':eventName, 'answered': event['answered'], 'kind': event['kind'], 'duration': event['duration']}, eventDetails)
 
-
-    doorbell.recording_download(id,filename=filename+".mp4",override=True)
-
+        doorbell.recording_download(id,filename=filename+".mp4",override=True)
+    else:
+        logging.warn(f"event {eventName} has already been downloaded")
 
 def listAllDevices():
 
@@ -54,18 +54,6 @@ def listAllDevices():
 
     devices = ring.devices()
     return devices
-
-def getEventsBefore(eventId):
-    devices = getRing().devices()
-    for doorbell in devices['doorbots']:
-
-        # listing the last 15 events of any kind
-        for event in doorbell.history(limit=10, older_than=eventId):
-            print('ID:       %s' % event['id'])
-            print('Kind:     %s' % event['kind'])
-            print('Answered: %s' % event['answered'])
-            print('When:     %s' % event['created_at'])
-            print('--' * 50)
   
 
 def getLastDoorbellEvents(maxEvents=10):
@@ -79,10 +67,6 @@ def getLastDoorbellEvents(maxEvents=10):
             print('Answered: %s' % event['answered'])
             print('When:     %s' % event['created_at'])
             print('--' * 50)
-
-        # get a event list only the triggered by motion
-        # events = doorbell.history(kind='motion')
-
 
 
 def token_updated(token):
