@@ -1,5 +1,4 @@
 import logging
-
 import json
 import os
 import sys
@@ -8,14 +7,16 @@ from pathlib import Path
 from pprint import pprint
 from decouple import config
 
-
 from ring_doorbell import Ring, Auth
+
+from ringConnector.dirStructure import DEFAULT_DIR_STUCTURE
+
 
 oauthFilePath = config("OAUTH_FILE")
 oauth_file = Path(oauthFilePath)
 
 
-def downloadDaysDingVideos(dirStructure, today=date.today()):
+def downloadDaysDingVideos(dirStructure=DEFAULT_DIR_STUCTURE, today=date.today()):
     ring = getRing()
 
     downloadedEvents = []
@@ -25,8 +26,8 @@ def downloadDaysDingVideos(dirStructure, today=date.today()):
     for doorbell in devices['doorbots']:
         for event in doorbell.history(limit=100, kind='ding'):
             if event['created_at'].date() == today:
-                downloadAndSaveEvent(event, doorbell, dirStructure)
-                downloadedEvents.append(event)
+                eventJson = downloadAndSaveEvent(event, doorbell, dirStructure)
+                downloadedEvents.append(eventJson)
 
     return downloadedEvents
 
@@ -43,10 +44,13 @@ def downloadAndSaveEvent(event, doorbell, dirStructure):
 
         filename = f"{eventDir}/{id}"
 
+        eventJson = {'id':id, 'createdAt':eventName, 'answered': event['answered'], 'kind': event['kind'], 'duration': event['duration']}
         with open(filename + ".json", 'w') as eventDetails:
-            json.dump({'id':id, 'createdAt':eventName, 'answered': event['answered'], 'kind': event['kind'], 'duration': event['duration']}, eventDetails)
+            json.dump(eventJson, eventDetails)
 
         doorbell.recording_download(id,filename=filename+".mp4",override=True)
+
+        return eventJson
     else:
         logging.warn(f"event {eventName} has already been downloaded")
 
