@@ -2,6 +2,7 @@ import logging
 
 import json
 import os
+import sys
 from datetime import date
 from pathlib import Path
 from pprint import pprint
@@ -10,8 +11,8 @@ from decouple import config
 
 from ring_doorbell import Ring, Auth
 
-
-oauth_file = Path(config("OAUTH_FILE"))
+oauthFilePath = config("OAUTH_FILE")
+oauth_file = Path(oauthFilePath)
 
 
 def downloadDaysDingVideos(dirStructure, today=date.today()):
@@ -74,7 +75,7 @@ def getAuth():
     if oauth_file.is_file():
         auth = Auth("MyProject/1.0", json.loads(oauth_file.read_text()), token_updated)
     else:
-        sys.exit('Authorization file does not exist')
+        sys.exit(f"Authorization file does not exist {oauthFilePath}")
     return auth
 
 def token_updated(token):
