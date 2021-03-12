@@ -16,16 +16,16 @@ oauthFilePath = config("OAUTH_FILE")
 oauth_file = Path(oauthFilePath)
 
 
-def downloadDaysDingVideos(dirStructure=DEFAULT_DIR_STUCTURE, today=date.today()):
+def downloadDaysDingVideos(dayToDownload=date.today(), dirStructure=DEFAULT_DIR_STUCTURE):
     ring = getRing()
 
     downloadedEvents = []
 
-    logging.info(f"Importing all ding event videos for {today}")
+    logging.info(f"Importing all ding event videos for {dayToDownload}")
     devices = ring.devices()
     for doorbell in devices['doorbots']:
         for event in doorbell.history(limit=100, kind='ding'):
-            if event['created_at'].date() == today:
+            if dayToDownload == None or event['created_at'].date() == dayToDownload:
                 eventJson = downloadAndSaveEvent(event, doorbell, dirStructure)
                 downloadedEvents.append(eventJson)
 
@@ -44,7 +44,7 @@ def downloadAndSaveEvent(event, doorbell, dirStructure):
 
         filename = f"{eventDir}/{id}"
 
-        eventJson = {'id':id, 'createdAt':eventName, 'answered': event['answered'], 'kind': event['kind'], 'duration': event['duration']}
+        eventJson = {'id':id, 'createdAt':event['created_at'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'), 'answered': event['answered'], 'kind': event['kind'], 'duration': event['duration']}
         with open(filename + ".json", 'w') as eventDetails:
             json.dump(eventJson, eventDetails)
 
