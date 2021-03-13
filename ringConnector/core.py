@@ -42,13 +42,23 @@ def downloadAndSaveEvent(event, doorbell, dirStructure):
     if not os.path.isdir(eventDir):
         os.mkdir(eventDir)
 
-        filename = f"{eventDir}/{id}"
+        filename = f"{eventDir}/{eventName}"
+        videoFileName = filename+".mp4" 
 
-        eventJson = {'id':id, 'createdAt':event['created_at'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'), 'answered': event['answered'], 'kind': event['kind'], 'duration': event['duration']}
+        eventJson = {
+            'id':id, 
+            'eventName': eventName,
+            'createdAt':event['created_at'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'), #json formatted event time
+            'answered': event['answered'], 
+            'kind': event['kind'], 
+            'duration': event['duration'],
+            'videoFileName': videoFileName,
+            'status': 'UNPROCESSED'
+        }
         with open(filename + ".json", 'w') as eventDetails:
             json.dump(eventJson, eventDetails)
 
-        doorbell.recording_download(id,filename=filename+".mp4",override=True)
+        doorbell.recording_download(id,filename=videoFileName,override=True)
 
         return eventJson
     else:
