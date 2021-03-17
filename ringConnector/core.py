@@ -46,7 +46,7 @@ def downloadAndSaveEvent(event, doorbell, dirStructure):
         videoFileName = filename+".mp4" 
 
         eventJson = {
-            'id':id, 
+            'ringId':id, 
             'eventName': eventName,
             'createdAt':event['created_at'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'), #json formatted event time
             'answered': event['answered'], 
