@@ -3,9 +3,8 @@ from decouple import config
 DATA_DIR = config('DATA_DIR')
 
 
-class DirStructureRingConnector():
+class DirStructure():
     def __init__(self, dataDir = DATA_DIR):
-        self.unprocessedEvents = dataDir + "/events/unprocessed"
-        self.processedEvents = dataDir + "/events/processed"
+        self.videos = dataDir + "/videos"
 
-DEFAULT_DIR_STUCTURE = DirStructureRingConnector()
+DEFAULT_DIR_STUCTURE = DirStructure()

@@ -38,32 +38,27 @@ def downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload):
 
     id  = event['id'] 
     eventName = event['created_at'].strftime("%Y%m%d-%H%M%S")
-    eventDir = f"{dirStructure.unprocessedEvents}/{eventName}"
-    if not os.path.isdir(eventDir):
-        os.mkdir(eventDir)
 
-        filename = f"{eventDir}/{eventName}"
-        videoFileName = filename+".mp4" 
+    filename = f"{dirStructure.videos}/{eventName}"
+    videoFileName = filename+".mp4" 
 
-        eventJson = {
-            'ringId':id, 
-            'date': dayToDownload.strftime("%Y%m%d"),
-            'eventName': eventName,
-            'createdAt':event['created_at'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'), #json formatted event time
-            'answered': event['answered'], 
-            'kind': event['kind'], 
-            'duration': event['duration'],
-            'videoFileName': videoFileName,
-            'status': 'UNPROCESSED'
-        }
-        with open(filename + ".json", 'w') as eventDetails:
-            json.dump(eventJson, eventDetails)
+    eventJson = {
+        'ringId':id, 
+        'date': dayToDownload.strftime("%Y%m%d"),
+        'eventName': eventName,
+        'createdAt':event['created_at'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'), #json formatted event time
+        'answered': event['answered'], 
+        'kind': event['kind'], 
+        'duration': event['duration'],
+        'videoFileName': videoFileName,
+        'status': 'UNPROCESSED'
+    }
+    with open(filename + ".json", 'w') as eventDetails:
+        json.dump(eventJson, eventDetails)
 
-        doorbell.recording_download(id,filename=videoFileName,override=True)
+    doorbell.recording_download(id,filename=videoFileName,override=True)
 
-        return eventJson
-    else:
-        logging.warn(f"event {eventName} has already been downloaded")
+    return eventJson
 
 def listAllDevices():
 
