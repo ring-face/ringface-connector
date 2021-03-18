@@ -26,12 +26,12 @@ def downloadDaysDingVideos(dayToDownload=date.today(), dirStructure=DEFAULT_DIR_
     for doorbell in devices['doorbots']:
         for event in doorbell.history(limit=100, kind='ding'):
             if dayToDownload == None or event['created_at'].date() == dayToDownload:
-                eventJson = downloadAndSaveEvent(event, doorbell, dirStructure)
+                eventJson = downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload)
                 downloadedEvents.append(eventJson)
 
     return downloadedEvents
 
-def downloadAndSaveEvent(event, doorbell, dirStructure):
+def downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload):
 
     logging.debug(f"will download video for event {event}")
 
@@ -47,6 +47,7 @@ def downloadAndSaveEvent(event, doorbell, dirStructure):
 
         eventJson = {
             'ringId':id, 
+            'date': dayToDownload.strftime("%Y%m%d"),
             'eventName': eventName,
             'createdAt':event['created_at'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'), #json formatted event time
             'answered': event['answered'], 
