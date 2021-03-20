@@ -1,11 +1,11 @@
 import logging
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from ringConnector.core import downloadDaysDingVideos
 import datetime
 
 
 app = Flask(__name__)
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 logging.info("Server started")
 
 
@@ -18,11 +18,13 @@ def downloadForToday():
     eventsList = downloadDaysDingVideos()
     return jsonify(eventsList)
 
-@app.route('/connector/download/<dayString>')
+@app.route('/connector/download/<dayString>', methods=["POST"])
 def downloadForDay(dayString):
+    downloadedEventsRingIds = request.json
+
     # assert dayString == request.view_args['day']
     
     dayToDownload = datetime.datetime.strptime(dayString, '%Y%m%d').date()
 
-    eventsList = downloadDaysDingVideos(dayToDownload = dayToDownload)
+    eventsList = downloadDaysDingVideos(dayToDownload = dayToDownload, downloadedEventsRingIds = downloadedEventsRingIds)
     return jsonify(eventsList)
