@@ -6,6 +6,10 @@ import datetime
 
 app = Flask(__name__)
 logging.getLogger().setLevel(logging.DEBUG)
+
+logger = logging.getLogger('requests_oauthlib').setLevel(logging.INFO)
+logger = logging.getLogger('urllib3').setLevel(logging.INFO)
+
 logging.info("Server started")
 
 
@@ -21,6 +25,7 @@ def downloadForToday():
 @app.route('/connector/download/<dayString>', methods=["POST"])
 def downloadForDay(dayString):
     downloadedEventsRingIds = request.json
+    logging.debug(f"will not re-download events {downloadedEventsRingIds}")
 
     # assert dayString == request.view_args['day']
     
