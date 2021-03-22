@@ -27,7 +27,7 @@ def downloadDaysDingVideos(dayToDownload=date.today(), dirStructure=DEFAULT_DIR_
     devices = ring.devices()
     for doorbell in devices['doorbots']:
         for event in doorbell.history(limit=100, kind='ding'):
-            if (dayToDownload == None or event['created_at'].date() == dayToDownload) and event["id"] in downloadedEventsRingIds:
+            if (dayToDownload == None or event['created_at'].date() == dayToDownload) and event["id"] not in downloadedEventsRingIds:
                 eventJson = downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload)
                 downloadedEvents.append(eventJson)
 
