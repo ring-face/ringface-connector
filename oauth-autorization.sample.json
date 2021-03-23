@@ -1,0 +1,8 @@
+{
+  "access_token": "eyJhbGciOiJIUzUxMiIsImprdSI6Ii9vYXV0aC9pbnRlcm5hbC9qd2tzIiwia2lkIjoiYzEyODEwMGIiLCJ0eXAiOiJKV1QifQ.eyJhcHBfaWQiOiJyaW5nX29mZmljaWFsX2FuZHJvaWQiLCJjaWQiOiJyaW5nX29mZmljaWFsX2FuZHJvaWQiLCJleHAiOjE2MTY0MzI1NTAsImhhcmR3YXJlX2lkIjoiWU9VUi1IQVJEV0FSRS1JRCIsImlhdCI6MTYxNjQyODk1MCwicm5kIjoiU09NRS1STkQiLCJzY29wZXMiOlsiY2xpZW50Il0sInNlc3Npb25faWQiOiJZT1VSLVNFU1NJT04tSUQiLCJ1c2VyX2lkIjoxMjM0NTY3fQ.EwdhZSKEKP4wA75LerxKUMGZKEPkfIikgZ8MDWLw4jpf3c8nOvM790s-BNlvu6Aohv6UnVaXBlOTvSRqvRfDXw",
+  "expires_in": 3600,
+  "refresh_token": "jwt.refresh.token",
+  "scope": ["client"],
+  "token_type": "Bearer",
+  "expires_at": 1616432550.2914371
+}

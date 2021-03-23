@@ -1,0 +1,14 @@
+FROM python:3.8.8-slim-buster
+
+WORKDIR /app
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+COPY ringConnector ringConnector
+
+ENV OAUTH_FILE=/app/output/oauth-autorization.json
+ENV TEST_FILE=/app/output/testfile.json
+
+
+COPY startCreateAuthFile.py .
+
+CMD echo "test" >> $TEST_FILE && ./startCreateAuthFile.py
