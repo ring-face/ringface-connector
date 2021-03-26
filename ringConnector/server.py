@@ -32,4 +32,7 @@ def downloadForDay(dayString):
     dayToDownload = datetime.datetime.strptime(dayString, '%Y%m%d').date()
 
     eventsList = downloadDaysDingVideos(dayToDownload = dayToDownload, downloadedEventsRingIds = downloadedEventsRingIds)
+
+    logging.debug(f"downloaded {len(eventsList)} new events for {dayToDownload}")
+
     return jsonify(eventsList)

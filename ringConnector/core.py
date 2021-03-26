@@ -26,9 +26,9 @@ def downloadDaysDingVideos(dayToDownload=date.today(), dirStructure=DEFAULT_DIR_
     logging.info(f"Importing all ding event videos for {dayToDownload}")
     devices = ring.devices()
     for doorbell in devices['doorbots']:
-        for event in doorbell.history(limit=100, kind='ding'):
+        for event in doorbell.history(limit=300, kind='ding'):
             if (dayToDownload == None or event['created_at'].date() == dayToDownload):
-                if event["id"] in downloadedEventsRingIds:
+                if str(event["id"]) in downloadedEventsRingIds:
                     logging.debug(f"event {event['id']} already present, will not re-download")
                 else:
                     logging.debug(f"event {event['id']} will be downloaded")
@@ -49,7 +49,7 @@ def downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload):
     videoFileName = filename+".mp4" 
 
     eventJson = {
-        'ringId':id, 
+        'ringId':str(id), 
         'date': dayToDownload.strftime("%Y%m%d"),
         'eventName': eventName,
         'createdAt':event['created_at'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'), #json formatted event time
