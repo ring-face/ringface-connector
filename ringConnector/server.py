@@ -3,12 +3,13 @@ from flask import Flask, jsonify, request
 from ringConnector.core import downloadDaysDingVideos
 import datetime
 
+logging.basicConfig(format='%(message)s', level=logging.DEBUG)
+logging.getLogger('requests_oauthlib').setLevel(logging.INFO)
+logging.getLogger('urllib3').setLevel(logging.INFO)
 
 app = Flask(__name__)
 logging.getLogger().setLevel(logging.DEBUG)
 
-logger = logging.getLogger('requests_oauthlib').setLevel(logging.INFO)
-logger = logging.getLogger('urllib3').setLevel(logging.INFO)
 
 logging.info("Server started")
 
@@ -19,13 +20,14 @@ def hello():
 
 @app.route('/connector/download/today')
 def downloadForToday():
+    logging.debug(f"Downloading todays events")
     eventsList = downloadDaysDingVideos()
     return jsonify(eventsList)
 
 @app.route('/connector/download/<dayString>', methods=["POST"])
 def downloadForDay(dayString):
     downloadedEventsRingIds = request.json
-    logging.debug(f"will not re-download events {downloadedEventsRingIds}")
+    logging.debug(f"Downloading {dayString}. Will not re-download events {downloadedEventsRingIds}")
 
     # assert dayString == request.view_args['day']
     
