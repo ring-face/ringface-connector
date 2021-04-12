@@ -3,9 +3,11 @@ import json
 import os
 import sys
 from datetime import date
+import time
 from pathlib import Path
 from pprint import pprint
 from decouple import config
+import requests
 
 from ring_doorbell import Ring, Auth
 
@@ -30,6 +32,8 @@ def downloadDaysDingVideos(dayToDownload=date.today(), dirStructure=DEFAULT_DIR_
             if (dayToDownload == None or event['created_at'].date() == dayToDownload):
                 if str(event["id"]) in downloadedEventsRingIds:
                     logging.debug(f"event {event['id']} already present, will not re-download")
+                elif event["recording"]["status"] != "ready":
+                    logging.debug(f"event {event['id']} is not yet ready, and can not be downloaded")
                 else:
                     logging.debug(f"event {event['id']} will be downloaded")
                     eventJson = downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload)
@@ -62,7 +66,20 @@ def downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload):
     with open(filename + ".json", 'w') as eventDetails:
         json.dump(eventJson, eventDetails)
 
-    doorbell.recording_download(id,filename=videoFileName,override=True)
+    # short after the event, the video is not yet be available for download
+    # on unavailablility retry for 100 sec
+    i = 1
+    while True:
+        try:
+            doorbell.recording_download(id,filename=videoFileName,override=True)
+            break
+        except requests.exceptions.HTTPError as err:
+            logging.info(f"{videoFileName} is not yet available. will retry in 10 sec. Err: {err.response.status_code}")
+            i = i + 1
+            if i == 10:
+                break
+            else:
+                time.sleep(10)
 
     return eventJson
 
