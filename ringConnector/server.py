@@ -3,12 +3,11 @@ from flask import Flask, jsonify, request
 from ringConnector.core import downloadDaysDingVideos
 import datetime
 
-logging.basicConfig(format='%(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.DEBUG)
 logging.getLogger('requests_oauthlib').setLevel(logging.INFO)
 logging.getLogger('urllib3').setLevel(logging.INFO)
 
 app = Flask(__name__)
-logging.getLogger().setLevel(logging.DEBUG)
 
 
 logging.info("Server started")
