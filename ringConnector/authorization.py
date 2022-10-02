@@ -18,7 +18,7 @@ def writeAuthFile():
 
     username = input("Please enter your ring Username: ")
     password = getpass.getpass("Please enter your ring Password: ")
-    auth = Auth("MyProject/1.0", None, token_updated)
+    auth = Auth("Csabas Ringface", None, token_updated)
     try:
         auth.fetch_token(username, password)
     except MissingTokenError:

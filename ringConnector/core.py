@@ -106,7 +106,7 @@ def getLastDoorbellEvents(maxEvents=10):
 
 def getAuth():
     if oauth_file.is_file():
-        auth = Auth("MyProject/1.0", json.loads(oauth_file.read_text()), token_updated)
+        auth = Auth("Csabaauth/v1", json.loads(oauth_file.read_text()), token_updated)
     else:
         sys.exit(f"Authorization file does not exist {oauthFilePath}")
     return auth
