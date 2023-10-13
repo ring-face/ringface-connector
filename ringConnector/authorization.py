@@ -6,7 +6,7 @@ from oauthlib.oauth2 import MissingTokenError
 import logging
 import json
 
-oauth_file = Path(config("OAUTH_FILE"))
+oauth_file = Path(config("OAUTH_FILE", default="oauth-authorization.json"))
 
 
 """
@@ -14,11 +14,11 @@ Asks for the user credentials and creates the oauth json file
 """
 def writeAuthFile():
 
-    logging.warn(f"will create new oauth json file at {config('OAUTH_FILE')}")
+    logging.warn(f"will create new oauth json file at {oauth_file}")
 
     username = input("Please enter your ring Username: ")
     password = getpass.getpass("Please enter your ring Password: ")
-    auth = Auth("Csabas Ringface", None, token_updated)
+    auth = Auth("Ringface/v1", None, token_updated)
     try:
         auth.fetch_token(username, password)
     except MissingTokenError:

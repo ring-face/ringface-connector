@@ -14,7 +14,7 @@ from ring_doorbell import Ring, Auth
 from ringConnector.dirStructure import DEFAULT_DIR_STUCTURE
 
 
-oauthFilePath = config("OAUTH_FILE")
+oauthFilePath = config("OAUTH_FILE", default="oauth-authorization.json")
 oauth_file = Path(oauthFilePath)
 
 
@@ -106,7 +106,7 @@ def getLastDoorbellEvents(maxEvents=10):
 
 def getAuth():
     if oauth_file.is_file():
-        auth = Auth("Csabaauth/v1", json.loads(oauth_file.read_text()), token_updated)
+        auth = Auth("Ringface/v1", json.loads(oauth_file.read_text()), token_updated)
     else:
         sys.exit(f"Authorization file does not exist {oauthFilePath}")
     return auth
