@@ -4,6 +4,8 @@ from google.oauth2 import service_account
 import json
 import logging
 from decouple import config
+import os
+
 
 
 
@@ -20,14 +22,19 @@ def access_secret_version(project_id, secret_id, version_id="latest"):
     return payload
 
 def gsm_client():
-    credentials = service_account.Credentials.from_service_account_file(config("GCP_SA_JSON", default='./oauth-connector-sa.json'))
-    client = secretmanager.SecretManagerServiceClient(credentials=credentials)
-    return client
+    if os.getenv('FUNCTION_TARGET'):
+        logging.debug("Running on GCP, use default credentials")
+        client = secretmanager.SecretManagerServiceClient()
+    else:
+        logging.debug("Running locally, use service account file")
+        credentials = service_account.Credentials.from_service_account_file(config("GCP_SA_JSON", default='./oauth-connector-sa.json'))
+        client = secretmanager.SecretManagerServiceClient(credentials=credentials)
+        return client
 
 def load_ring_auth_json():
     logging.info("Loading the ring auth file")
 
-    project_id = config("GCP_PROJECT_ID")
+    project_id = config("GCP_PROJECT")
     secret_id = config("RING_AUTH_SECRET_ID")
     secret_string = access_secret_version(project_id, secret_id)
 
@@ -55,7 +62,7 @@ def update_ring_auth_json(token):
     logging.warn("UPDATING the ring auth file")
 
 
-    project_id = config("GCP_PROJECT_ID")
+    project_id = config("GCP_PROJECT")
     secret_id = config("RING_AUTH_SECRET_ID")
 
     # New secret data

@@ -6,13 +6,14 @@ from oauthlib.oauth2 import MissingTokenError
 import logging
 import json
 
-oauth_file = Path(config("OAUTH_FILE", default="oauth-authorization.json"))
 
 
 """
 Asks for the user credentials and creates the oauth json file
 """
 def writeAuthFile():
+
+    oauth_file = Path(config("OAUTH_FILE", default="oauth-authorization.json"))
 
     logging.warn(f"will create new oauth json file at {oauth_file}")
 
@@ -26,6 +27,8 @@ def writeAuthFile():
 
 
 def token_updated(token):
+    oauth_file = Path(config("OAUTH_FILE", default="oauth-authorization.json"))
+
     oauth_file.write_text(json.dumps(token))
     logging.warn(f"new token file created")
 
