@@ -12,10 +12,8 @@ import requests
 from ring_doorbell import Ring, Auth
 
 from ringConnector.dirStructure import DEFAULT_DIR_STUCTURE
+from ringConnector.gsm import load_ring_auth_json, update_ring_auth_json
 
-
-oauthFilePath = config("OAUTH_FILE", default="oauth-authorization.json")
-oauth_file = Path(oauthFilePath)
 
 
 def downloadDaysDingVideos(dayToDownload=date.today(), dirStructure=DEFAULT_DIR_STUCTURE, downloadedEventsRingIds = []):
@@ -105,14 +103,9 @@ def getLastDoorbellEvents(maxEvents=10):
 
 
 def getAuth():
-    if oauth_file.is_file():
-        auth = Auth("Ringface/v1", json.loads(oauth_file.read_text()), token_updated)
-    else:
-        sys.exit(f"Authorization file does not exist {oauthFilePath}")
+    auth = Auth("Ringface/v1", load_ring_auth_json(), update_ring_auth_json)
     return auth
 
-def token_updated(token):
-    oauth_file.write_text(json.dumps(token))
 
 def getRing():
     auth = getAuth()

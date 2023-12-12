@@ -5,4 +5,6 @@
 ring_doorbell==0.7.2
 python-decouple
 Flask
-decouple
+# decouple
+functions-framework==3.*
+google-cloud-secret-manager
