@@ -1,3 +1,4 @@
+import datetime
 import logging
 from flask import jsonify
 from ringConnector.core import downloadDaysDingVideos
@@ -9,10 +10,23 @@ def setup_logging():
     logging.info("Logging set up")
 
 
-def downloadForToday(request):
+def download(request):
+    logging.debug(f"Download triggered")
     try:
-        logging.debug(f"Downloading todays events")
-        eventsList = downloadDaysDingVideos()
+
+        dayToDownload = request.args.get('dayToDownload', default=None, type=str)
+
+        eventsList = None
+        if dayToDownload is None:
+            logging.debug(f"Downloading events for today")
+            eventsList = downloadDaysDingVideos()
+        else:
+            dayToDownload = datetime.datetime.strptime(dayToDownload, '%Y%m%d').date()
+
+            downloadedEventsRingIds = request.json
+            logging.debug(f"Downloading {dayToDownload}. Will not re-download events {downloadedEventsRingIds}")
+            eventsList = downloadDaysDingVideos(dayToDownload=dayToDownload, downloadedEventsRingIds = downloadedEventsRingIds)
+
         return jsonify(eventsList)
     except Exception as e:
         logging.error(f"An error occurred: {e}", exc_info=True)
