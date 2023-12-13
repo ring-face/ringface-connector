@@ -15,26 +15,12 @@ def access_secret_version(project_id, secret_id, version_id="latest"):
     """
 
     logging.debug(f"Accessing the GSM at projects/{project_id}/secrets/{secret_id}/versions/{version_id}")
-    client = gsm_client()
+    client = secretmanager.SecretManagerServiceClient()
     name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
     response = client.access_secret_version(request={"name": name})
     payload = response.payload.data.decode("UTF-8")
     return payload
 
-def gsm_client():
-    client = None
-    if os.getenv('FUNCTION_TARGET'):
-        logging.debug("Running on GCP, use default credentials")
-        client = secretmanager.SecretManagerServiceClient()
-    else:
-        # logging.debug("Running locally, use service account file")
-        # credentials = service_account.Credentials.from_service_account_file(config("GCP_SA_JSON", default='./oauth-connector-sa.json'))
-        # client = secretmanager.SecretManagerServiceClient(credentials=credentials)
-
-        logging.debug("Running locally, use service account impersonation")
-        client = secretmanager.SecretManagerServiceClient()
-
-    return client
 
 def load_ring_auth_json():
     logging.info("Loading the ring auth file")
@@ -52,7 +38,7 @@ def add_secret_version(project_id, secret_id, new_secret_data):
     """
     Adds a new version to the specified secret with the given data.
     """
-    client = gsm_client()
+    client = secretmanager.SecretManagerServiceClient()
     parent = client.secret_path(project_id, secret_id)
 
     # Convert data to bytes
