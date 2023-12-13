@@ -11,12 +11,12 @@ import requests
 
 from ring_doorbell import Ring, Auth
 
-from ringConnector.dirStructure import DEFAULT_DIR_STUCTURE
+from ringConnector.gcs import save_json_to_gcs, save_mp4_to_gcs
 from ringConnector.gsm import load_ring_auth_json, update_ring_auth_json
 
 
 
-def downloadDaysDingVideos(dayToDownload=date.today(), dirStructure=DEFAULT_DIR_STUCTURE, downloadedEventsRingIds = []):
+def downloadDaysDingVideos(dayToDownload=date.today(), downloadedEventsRingIds = []):
 
     logging.debug(f"exising events will not be downloaded: {downloadedEventsRingIds}")
     ring = getRing()
@@ -34,12 +34,12 @@ def downloadDaysDingVideos(dayToDownload=date.today(), dirStructure=DEFAULT_DIR_
                     logging.debug(f"event {event['id']} is not yet ready, and can not be downloaded")
                 else:
                     logging.debug(f"event {event['id']} will be downloaded")
-                    eventJson = downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload)
+                    eventJson = downloadAndSaveEvent(event, doorbell, dayToDownload)
                     downloadedEvents.append(eventJson)
 
     return downloadedEvents
 
-def downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload):
+def downloadAndSaveEvent(event, doorbell, dayToDownload):
 
     logging.debug(f"will download video for event {event}")
 
@@ -47,8 +47,7 @@ def downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload):
     id  = event['id'] 
     eventName = event['created_at'].strftime("%Y%m%d-%H%M%S")
 
-    filename = f"{dirStructure.videos}/{eventName}"
-    videoFileName = filename+".mp4" 
+    filename = f"videos/{eventName}"
 
     eventJson = {
         'ringId':str(id), 
@@ -58,21 +57,22 @@ def downloadAndSaveEvent(event, doorbell, dirStructure, dayToDownload):
         'answered': event['answered'], 
         'kind': event['kind'], 
         'duration': event['duration'],
-        'videoFileName': videoFileName,
+        'videoFileName': filename + ".mp4",
         'status': 'UNPROCESSED'
     }
-    with open(filename + ".json", 'w') as eventDetails:
-        json.dump(eventJson, eventDetails)
+    save_json_to_gcs(eventJson, filename + ".json")
+
 
     # short after the event, the video is not yet be available for download
     # on unavailablility retry for 100 sec
     i = 1
     while True:
         try:
-            doorbell.recording_download(id,filename=videoFileName,override=True)
+            content = doorbell.recording_download(id)
+            save_mp4_to_gcs(content, filename + ".mp4")
             break
         except requests.exceptions.HTTPError as err:
-            logging.info(f"{videoFileName} is not yet available. will retry in 10 sec. Err: {err.response.status_code}")
+            logging.info(f"{filename} is not yet available. will retry in 10 sec. Err: {err.response.status_code}")
             i = i + 1
             if i == 10:
                 break

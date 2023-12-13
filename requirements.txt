@@ -8,3 +8,4 @@ Flask
 # decouple
 functions-framework==3.*
 google-cloud-secret-manager
+google-cloud-storage
