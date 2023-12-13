@@ -22,14 +22,19 @@ def access_secret_version(project_id, secret_id, version_id="latest"):
     return payload
 
 def gsm_client():
+    client = None
     if os.getenv('FUNCTION_TARGET'):
         logging.debug("Running on GCP, use default credentials")
         client = secretmanager.SecretManagerServiceClient()
     else:
-        logging.debug("Running locally, use service account file")
-        credentials = service_account.Credentials.from_service_account_file(config("GCP_SA_JSON", default='./oauth-connector-sa.json'))
-        client = secretmanager.SecretManagerServiceClient(credentials=credentials)
-        return client
+        # logging.debug("Running locally, use service account file")
+        # credentials = service_account.Credentials.from_service_account_file(config("GCP_SA_JSON", default='./oauth-connector-sa.json'))
+        # client = secretmanager.SecretManagerServiceClient(credentials=credentials)
+
+        logging.debug("Running locally, use service account impersonation")
+        client = secretmanager.SecretManagerServiceClient()
+
+    return client
 
 def load_ring_auth_json():
     logging.info("Loading the ring auth file")
